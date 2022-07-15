@@ -20,6 +20,24 @@ db.connect();
 // Routers
 app.use('/',authRouter);
 
+
+app.get("/api/getQuizzes", quizCtrl.getQuizzes);
+app.get("/api/getquiz/:id", quizCtrl.getQuiz);
+app.put("/api/updatequiz", quizCtrl.updateQuiz);
+app.post("/api/newquiz", quizCtrl.newQuiz);
+app.delete("/api/deletequiz/:id", quizCtrl.deleteQuiz);
+
+
+app.get("/api/getquestion/:id", quizCtrl.getQuestion);
+app.get("/api/getquestions/:id", quizCtrl.getQuestions);
+app.put("/api/updatequestion", quizCtrl.updateQuestion);
+app.delete("/api/deletequestion/:id", quizCtrl.deleteQuestion);
+app.post("/api/newquestion", quizCtrl.addQuestion);
+
+
+
+
+
 // Error handler
 app.use(globalErrorHandler);
 
