@@ -6,7 +6,7 @@ const secretKey = process.env.SECRET_KEY;
 const bcrypt=require("bcrypt")
 const randomstring=require("randomstring")
 
-async function isValidRefreshToken(username, refreshToken) {
+async function validateRefreshToken(username, refreshToken) {
   var user = await User.findOne({
     username: username,
     refreshToken: refreshToken,
@@ -19,15 +19,25 @@ async function isValidRefreshToken(username, refreshToken) {
   return true;
 };
 
+
+
 const register=catchAsync(async(req,res,next)=>{
   const {username,password} = req.body;
+
+  // check user existance
+  var user=await User.findOne({username:username});
+  if (user){
+    return next(new AppError(500,"User is existed!"))
+  }
+
   var user=new User({
     username:username,
     password:password
   });
   user.password=await bcrypt.hash(password,10);
   user.save().then(result=>{
-    res.status(201).json(user);
+    delete result._doc.password
+    res.status(201).json(result);
   })
 })
 
@@ -62,7 +72,6 @@ const login = catchAsync(async (req, res, next) => {
     expiresIn: process.env.JWT_EXPIRED_TIME,
   };
 
-  console.log(jwtOptions);
   const accessToken = jwt.sign(payload, secretKey, jwtOptions);
 
   const refreshToken = randomstring.generate(30) + Date.now().toString(16);
@@ -92,7 +101,7 @@ const refreshToken = catchAsync((req, res, next) => {
       secretKey,
       jwtOptions
     );
-    const isValidRefreshToken = isValidRefreshToken(username, refreshToken);
+    const isValidRefreshToken = validateRefreshToken(username, refreshToken);
     if (isValidRefreshToken) {
       const payload = {
         username,

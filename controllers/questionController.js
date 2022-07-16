@@ -25,7 +25,7 @@ const addQuestion = catchAsync(async (req, res, next) => {
   newQuestion
     .save()
     .then(() => res.status(200).send())
-    .catch((err) => next(new AppError(err.toString(), 500)));
+    .catch((err) => next(new AppError(500, err.toString())));
 });
 
 const deleteQuestion = catchAsync(async (req, res, next) => {
@@ -33,14 +33,14 @@ const deleteQuestion = catchAsync(async (req, res, next) => {
   Question.deleteOne({ _id: id })
 
     .then(() => res.status(200).send())
-    .catch((err) => next(new AppError(err.toString(), 500)));
+    .catch((err) => next(new AppError(500, err.toString())));
 });
 
 const getQuestion = catchAsync(async (req, res, next) => {
   let { id } = req.params;
   Question.findOne({ _id: id })
     .then((result) => res.status(200).send(result))
-    .catch((err) => next(new AppError(err.toString(), 500)));
+    .catch((err) => next(new AppError(500, err.toString())));
 });
 
 const updateQuestion = catchAsync(async (req, res, next) => {
@@ -58,15 +58,13 @@ const updateQuestion = catchAsync(async (req, res, next) => {
     }
   )
     .then((result) => res.status(200).send(result))
-    .catch((err) => next(new AppError(err.toString(), 500)));
+    .catch((err) => next(new AppError(500, err.toString())));
 });
-
-
 
 module.exports = {
   getQuestions,
   deleteQuestion,
   addQuestion,
   getQuestion,
-  updateQuestion
+  updateQuestion,
 };

@@ -17,33 +17,33 @@ const newQuiz = catchAsync(async (req, res, next) => {
     .save()
     .then((result) => res.status(200).send(result))
     .catch((err) => {
-      return next(new AppError(err.toString(), 500));
+      return next(new AppError(500, err.toString()));
     });
 });
-
-
 
 const deleteQuiz = catchAsync(async (req, res, next) => {
   let { id } = req.params;
   Quiz.deleteOne({ _id: id })
 
     .then((result) => res.status(200).send(result))
-    .catch((err) => next(new AppError(err.toString(), 500)));
+    .catch((err) => next(new AppError(500, err.toString())));
 });
 
 const updateQuiz = catchAsync(async (req, res, next) => {
   let { id, newName, newInfo } = req.body;
   Quiz.updateOne({ _id: id }, { quizName: newName, info: newInfo })
     .then((result) => res.status(200).send(result))
-    .catch((err) => next(new AppError(err.toString(), 500)));
+    .catch((err) => next(new AppError(500, err.toString())));
 });
 
 const getQuiz = catchAsync(async (req, res, next) => {
   let { id } = req.params;
   Quiz.findOne({ _id: id })
-
-    .then((result) => res.status(200).send(result))
-    .catch((err) => next(new AppError(err.toString(), 500)));
+    .then((result) => {
+      if (!result) return next(new AppError(404, "Quiz not found"));
+      res.status(200).send(result);
+    })
+    .catch((err) => next(new AppError(500, err.toString())));
 });
 
 module.exports = {
