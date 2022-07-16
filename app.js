@@ -44,6 +44,7 @@ app.delete("/api/deletequestion/:id", questionController.deleteQuestion);
 // app.post("/api/user",userController.createUser)
 
 app.post("/auth/login",authController.login);
+app.post("/auth/register",authController.register);
 app.post("/auth/refresh",authController.refreshToken);
 
 

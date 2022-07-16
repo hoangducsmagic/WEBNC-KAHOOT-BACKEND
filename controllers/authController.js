@@ -4,7 +4,7 @@ const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const secretKey = process.env.SECRET_KEY;
 
-const isValidRefreshToken = async function (username, refreshToken) {
+async function isValidRefreshToken(username, refreshToken) {
   var user = await User.findOne({
     username: username,
     refreshToken: refreshToken,
@@ -16,6 +16,15 @@ const isValidRefreshToken = async function (username, refreshToken) {
 
   return true;
 };
+
+const register=catchAsync(async(req,res,next)=>{
+  const {username,password} = req.body;
+  var user=new User;
+  user.password=await bcrypt.hash(password,10);
+  user.save().then(result=>{
+    res.status(201).json(user);
+  })
+})
 
 const login = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ username: req.body.username });
@@ -105,4 +114,4 @@ const refreshToken = catchAsync((req, res, next) => {
   }
 });
 
-module.exports = { login, refreshToken };
+module.exports = { login, refreshToken,register };
