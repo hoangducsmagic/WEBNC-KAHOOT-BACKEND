@@ -3,6 +3,8 @@ const AppError = require("../utils/appError");
 const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const secretKey = process.env.SECRET_KEY;
+const bcrypt=require("bcrypt")
+const randomstring=require("randomstring")
 
 async function isValidRefreshToken(username, refreshToken) {
   var user = await User.findOne({
@@ -19,7 +21,10 @@ async function isValidRefreshToken(username, refreshToken) {
 
 const register=catchAsync(async(req,res,next)=>{
   const {username,password} = req.body;
-  var user=new User;
+  var user=new User({
+    username:username,
+    password:password
+  });
   user.password=await bcrypt.hash(password,10);
   user.save().then(result=>{
     res.status(201).json(user);
