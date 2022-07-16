@@ -28,7 +28,6 @@ app.use((req,res,next)=>{
 })
 
 // Routers
-app.use("/", authRouter);
 
 app.post("/api/newquiz", quizController.newQuiz);
 app.get("/api/getQuizzes", quizController.getQuizzes);
