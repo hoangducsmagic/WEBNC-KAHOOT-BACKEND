@@ -8,7 +8,11 @@ const questionSchema = new Schema({
     answer2:String,
     answer3:String,
     answer4:String,
-    correctAnswer:Number
+    correctAnswer:Number,
+    image:{
+      url:String,
+      cloudinaryId:String
+    }
   },
   {
     timestamps:true
