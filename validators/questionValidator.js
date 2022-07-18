@@ -16,7 +16,7 @@ const addQuestionValidate = validator.body(
 
 const updateQuestionValidate = validator.body(
   Joi.object({
-    id: Joi.objectId().required(),  //quiz id
+    id: Joi.objectId().required(),  //question id
     question: Joi.string().optional(),
     answer1: Joi.string().optional(),
     answer2: Joi.string().optional(),
