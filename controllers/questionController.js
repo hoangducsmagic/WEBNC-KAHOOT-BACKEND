@@ -9,7 +9,6 @@ const getQuestions = catchAsync(async (req, res, next) => {
   var questions = await Question.find({ quizId: id });
   questions = questions.map((question) => {
     var imageUrl = question.image.url;
-    console.log(imageUrl);
     if (question._doc.image) {
       question._doc.image = question._doc.image.url;
     }
