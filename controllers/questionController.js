@@ -24,7 +24,7 @@ const addQuestion = catchAsync(async (req, res, next) => {
   });
   newQuestion
     .save()
-    .then(() => res.status(200).send())
+    .then((result) => res.status(200).send(result))
     .catch((err) => next(new AppError(500, err.toString())));
 });
 
