@@ -3,8 +3,7 @@ const db = require("./config/db");
 const globalErrorHandler = require("./middlewares/globalErrorHandler");
 const authRouter = require("./routes/authRoutes");
 const questionRouter = require("./routes/questionRoutes");
-const quizController = require("./controllers/quizController");
-const questionController = require("./controllers/questionController");
+const quizRouter = require("./routes/quizRoutes");
 const auth=require('./middlewares/auth')
 
 // Start express app
@@ -24,15 +23,9 @@ db.connect();
 
 
 // Routers
-
-app.post("/api/newquiz", auth,quizController.newQuiz);
-app.get("/api/getQuizzes",  auth,quizController.getQuizzes);
-app.get("/api/getquiz/:id",  auth,quizController.getQuiz);
-app.put("/api/updatequiz",  auth,quizController.updateQuiz);
-app.delete("/api/deletequiz/:id",  auth,quizController.deleteQuiz);
-
 app.use("/auth",authRouter)
 app.use("/api",auth,questionRouter)
+app.use("/api",auth,quizRouter)
 
 // Error handler
 app.use(globalErrorHandler);
