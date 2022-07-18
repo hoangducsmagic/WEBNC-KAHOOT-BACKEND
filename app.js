@@ -19,9 +19,6 @@ app.use(
 // Connect to db
 db.connect();
 
-//Middleware
-
-
 // Routers
 app.use("/auth",authRouter)
 app.use("/api",auth,questionRouter)
