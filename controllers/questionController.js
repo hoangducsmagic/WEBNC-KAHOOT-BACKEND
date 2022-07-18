@@ -1,6 +1,5 @@
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
-const Quiz = require("../models/quizModel");
 const Question = require("../models/questionModel");
 
 const getQuestions = catchAsync(async (req, res, next) => {
