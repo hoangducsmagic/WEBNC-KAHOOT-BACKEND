@@ -1,21 +1,19 @@
 const validator = require("express-joi-validation").createValidator({});
 const Joi = require("joi");
 
-const loginValidator = validator.body(
+const loginValidate = validator.body(
   Joi.object({
     username: Joi.string().required(),
     password: Joi.string().required(),
   })
 );
 
-const signupValidator = validator.body(
+const registerValidate = validator.body(
   Joi.object({
     username: Joi.string().required(),
     password: Joi.string().required(),
-    email: Joi.string().email(),
-    dob:Joi.date()
   })
 );
 
-module.exports={loginValidator,signupValidator}
+module.exports={loginValidate,registerValidate}
   
