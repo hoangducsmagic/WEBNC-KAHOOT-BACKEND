@@ -1,14 +1,12 @@
-const streamifier = require("streamifier");
-const cloudinary = require("../config/cloudinary");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const Question = require("../models/questionModel");
+const streamUpload=require('../utils/streamUpload')
 
 const getQuestions = catchAsync(async (req, res, next) => {
   let { id } = req.params;
   var questions = await Question.find({ quizId: id });
   questions = questions.map((question) => {
-    var imageUrl = question.image.url;
     if (question._doc.image) {
       question._doc.image = question._doc.image.url;
     }
@@ -16,20 +14,6 @@ const getQuestions = catchAsync(async (req, res, next) => {
   });
   res.status(200).send(questions);
 });
-
-const streamUpload = (req) => {
-  return new Promise((resolve, reject) => {
-    let stream = cloudinary.uploader.upload_stream((error, result) => {
-      if (result) {
-        resolve(result);
-      } else {
-        reject(error);
-      }
-    });
-
-    streamifier.createReadStream(req.file.buffer).pipe(stream);
-  });
-};
 
 const addQuestion = catchAsync(async (req, res, next) => {
   let { id, question, answer1, answer2, answer3, answer4, correctAnswer } =
