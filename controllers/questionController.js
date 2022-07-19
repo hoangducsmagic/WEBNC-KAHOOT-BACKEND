@@ -2,6 +2,7 @@ const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const Question = require("../models/questionModel");
 const streamUpload=require('../utils/streamUpload')
+const cloudinary = require("../config/cloudinary");
 
 const getQuestions = catchAsync(async (req, res, next) => {
   let { id } = req.params;
@@ -55,9 +56,13 @@ const addQuestion = catchAsync(async (req, res, next) => {
 
 const deleteQuestion = catchAsync(async (req, res, next) => {
   let { id } = req.params;
+  var question=await Question.findOne({_id:id});
+  if (question._doc.image){
+    var cloudinaryId=question._doc.image.cloudinaryId;
+    await cloudinary.uploader.destroy(cloudinaryId);
+  }
   Question.deleteOne({ _id: id })
-
-    .then(() => res.status(200).send())
+    .then((result) => res.status(200).send(result))
     .catch((err) => next(new AppError(500, err.toString())));
 });
 
