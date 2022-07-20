@@ -8,7 +8,7 @@ const getQuestions = catchAsync(async (req, res, next) => {
   let { id } = req.params;
   var questions = await Question.find({ quizId: id });
   questions = questions.map((question) => {
-    if (question._doc.image) {
+    if (question._doc.image && Object.keys(question._doc.image).length > 0) {
       question._doc.image = question._doc.image.url;
     }
     return question;
@@ -46,7 +46,7 @@ const addQuestion = catchAsync(async (req, res, next) => {
   newQuestion
     .save()
     .then((result) => {
-      if (result._doc.image) {
+      if (result._doc.image && Object.keys(result._doc.image).length > 0) {
         result._doc.image = result._doc.image.url;
       }
       res.status(200).send(result);
@@ -57,7 +57,7 @@ const addQuestion = catchAsync(async (req, res, next) => {
 const deleteQuestion = catchAsync(async (req, res, next) => {
   let { id } = req.params;
   var question = await Question.findOne({ _id: id });
-  if (question._doc.image) {
+  if (question._doc.image && Object.keys(question._doc.image).length > 0) {
     var cloudinaryId = question._doc.image.cloudinaryId;
     await cloudinary.uploader.destroy(cloudinaryId);
   }
@@ -70,7 +70,7 @@ const getQuestion = catchAsync(async (req, res, next) => {
   let { id } = req.params;
   Question.findOne({ _id: id })
     .then((result) => {
-      if (result._doc.image) {
+      if (result._doc.image && Object.keys(result._doc.image).length > 0) {
         result._doc.image = result._doc.image.url;
       }
       res.status(200).send(result);
@@ -83,10 +83,19 @@ const updateQuestion = catchAsync(async (req, res, next) => {
     req.body;
   var newImage;
   var oldQuestion = await Question.findOne({ _id: id });
+  // remove image
+  if (req.body.image==''){
+    if (oldQuestion._doc.image && Object.keys(oldQuestion._doc.image).length > 0) {
+      let cloudinaryId = oldQuestion._doc.image.cloudinaryId;
+      await cloudinary.uploader.destroy(cloudinaryId);
+      newImage = {};
+    }
+  }
+
   if (req.file) {
     // check if the question image is exsited
     // then delete the old one
-    if (oldQuestion._doc.image) {
+    if (oldQuestion._doc.image && Object.keys(oldQuestion._doc.image).length > 0) {
       let cloudinaryId = oldQuestion._doc.image.cloudinaryId;
       await cloudinary.uploader.destroy(cloudinaryId);
       newImage = {};
@@ -97,8 +106,10 @@ const updateQuestion = catchAsync(async (req, res, next) => {
       uploadResult = await streamUpload(req);
       let cloudinaryId = uploadResult.public_id;
       let imageUrl = uploadResult.url;
+      newImage={};
       newImage.url = imageUrl;
       newImage.cloudinaryId = cloudinaryId;
+
     } catch (err) {
       next(new AppError(500, err.toString()));
     }
@@ -119,7 +130,7 @@ const updateQuestion = catchAsync(async (req, res, next) => {
     .then(async () => {
       var question = await Question.findOne({ _id: id });
 
-      if (question._doc.image) {
+      if (question._doc.image && Object.keys(question._doc.image).length > 0) {
         question._doc.image = question._doc.image.url;
       }
       res.status(200).send(question);
