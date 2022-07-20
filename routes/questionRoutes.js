@@ -19,6 +19,7 @@ router.get("/getquestions/:id", questionController.getQuestions);
 router.get("/getquestion/:id", questionController.getQuestion);
 router.put(
   "/updatequestion",
+  fileUpload.single('image'),
   updateQuestionValidate,
   questionController.updateQuestion
 );

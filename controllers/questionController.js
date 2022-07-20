@@ -82,14 +82,12 @@ const updateQuestion = catchAsync(async (req, res, next) => {
   let { id, question, answer1, answer2, answer3, answer4, correctAnswer } =
     req.body;
   var newImage;
-
   var oldQuestion = await Question.findOne({ _id: id });
-
   if (req.file) {
     // check if the question image is exsited
     // then delete the old one
     if (oldQuestion._doc.image) {
-      let cloudinaryId = question._doc.image.cloudinaryId;
+      let cloudinaryId = oldQuestion._doc.image.cloudinaryId;
       await cloudinary.uploader.destroy(cloudinaryId);
       newImage = {};
     }
@@ -118,11 +116,13 @@ const updateQuestion = catchAsync(async (req, res, next) => {
       image: newImage,
     }
   )
-    .then((result) => {
-      if (result._doc.image) {
-        result._doc.image = result._doc.image.url;
+    .then(async () => {
+      var question = await Question.findOne({ _id: id });
+
+      if (question._doc.image) {
+        question._doc.image = question._doc.image.url;
       }
-      res.status(200).send(result);
+      res.status(200).send(question);
     })
     .catch((err) => next(new AppError(500, err.toString())));
 });
