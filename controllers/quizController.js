@@ -4,15 +4,15 @@ const Quiz = require("../models/quizModel");
 const Question = require("../models/questionModel");
 
 const getQuizzes = catchAsync(async (req, res, next) => {
-  let { id } = req.user;
-  var quizzes = await Quiz.find({ userId: id });
+  let { userId } = req.user;
+  var quizzes = await Quiz.find({ userId: userId });
   res.status(200).send(quizzes);
 });
 
 const newQuiz = catchAsync(async (req, res, next) => {
-  let { id } = req.user;
+  let { userId } = req.user;
   let { name, info } = req.body;
-  var quiz = new Quiz({ userId: id, quizName: name, info: info });
+  var quiz = new Quiz({ userId: userId, quizName: name, info: info });
   quiz
     .save()
     .then((result) => res.status(200).send(result))
