@@ -5,7 +5,9 @@ const Question = require("../models/questionModel");
 
 const getQuizzes = catchAsync(async (req, res, next) => {
   let { id } = req.user;
+  console.log(req.user);
   var quizzes = await Quiz.find({ userId: id });
+  console.log(quizzes)
   res.status(200).send(quizzes);
 });
 
