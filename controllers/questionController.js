@@ -1,7 +1,7 @@
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const Question = require("../models/questionModel");
-const streamUpload=require('../utils/streamUpload')
+const streamUpload = require("../utils/streamUpload");
 const cloudinary = require("../config/cloudinary");
 
 const getQuestions = catchAsync(async (req, res, next) => {
@@ -56,9 +56,9 @@ const addQuestion = catchAsync(async (req, res, next) => {
 
 const deleteQuestion = catchAsync(async (req, res, next) => {
   let { id } = req.params;
-  var question=await Question.findOne({_id:id});
-  if (question._doc.image){
-    var cloudinaryId=question._doc.image.cloudinaryId;
+  var question = await Question.findOne({ _id: id });
+  if (question._doc.image) {
+    var cloudinaryId = question._doc.image.cloudinaryId;
     await cloudinary.uploader.destroy(cloudinaryId);
   }
   Question.deleteOne({ _id: id })
@@ -81,6 +81,31 @@ const getQuestion = catchAsync(async (req, res, next) => {
 const updateQuestion = catchAsync(async (req, res, next) => {
   let { id, question, answer1, answer2, answer3, answer4, correctAnswer } =
     req.body;
+  var newImage;
+
+  var oldQuestion = await Question.findOne({ _id: id });
+
+  if (req.file) {
+    // check if the question image is exsited
+    // then delete the old one
+    if (oldQuestion._doc.image) {
+      let cloudinaryId = question._doc.image.cloudinaryId;
+      await cloudinary.uploader.destroy(cloudinaryId);
+      newImage = {};
+    }
+
+    // upload the new one
+    try {
+      uploadResult = await streamUpload(req);
+      let cloudinaryId = uploadResult.public_id;
+      let imageUrl = uploadResult.url;
+      newImage.url = imageUrl;
+      newImage.cloudinaryId = cloudinaryId;
+    } catch (err) {
+      next(new AppError(500, err.toString()));
+    }
+  }
+
   Question.updateOne(
     { _id: id },
     {
@@ -90,9 +115,15 @@ const updateQuestion = catchAsync(async (req, res, next) => {
       answer3: answer3,
       answer4: answer4,
       correctAnswer: correctAnswer,
+      image: newImage,
     }
   )
-    .then((result) => res.status(200).send(result))
+    .then((result) => {
+      if (result._doc.image) {
+        result._doc.image = result._doc.image.url;
+      }
+      res.status(200).send(result);
+    })
     .catch((err) => next(new AppError(500, err.toString())));
 });
 
