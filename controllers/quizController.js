@@ -32,7 +32,10 @@ const deleteQuiz = catchAsync(async (req, res, next) => {
 const updateQuiz = catchAsync(async (req, res, next) => {
   let { id, newName, newInfo } = req.body;
   Quiz.updateOne({ _id: id }, { quizName: newName, info: newInfo })
-    .then((result) => res.status(200).send(result))
+    .then(async () => {
+      var quiz=await Quiz.findOne({_id:id});
+      res.status(200).send(quiz)
+    })
     .catch((err) => next(new AppError(500, err.toString())));
 });
 
