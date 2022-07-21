@@ -16,16 +16,22 @@ const io = socket(
 io.on("connection", (socket) => {
   // Host Connection
   socket.on("host-join", (data) => {
-    socket.join(data.pin);
+  
+    const pin = data.toString();
+
+    socket.join(pin);
   });
   //Player Join Room
   socket.on("player-joined", (data) => {
-    socket.join(data);
+    const pin = (data).toString();
+
+    socket.join(pin);
   });
   //Add player to Quiz Object
   socket.on("player-add", (data) => {
+    const pin = data.selectedPin.toString();
     socket
-      .to(`${data.selectedPin}`)
+      .to(pin)
       .emit("room-joined", { name: data.nickname, id: socket.id });
   });
 
@@ -37,12 +43,12 @@ io.on("connection", (socket) => {
   });
   socket.on("question-answered", (data) => {
     socket
-      .to(data.pin)
+      .to((data.pin).toString())
       .emit("player-answer", { name: data.name, answer: data.answer });
   });
 
   socket.on("sent-info", (data) => {
-    io.to(data.id).emit("sent-info", {
+    io.to((data.id).toString()).emit("sent-info", {
       answeredCorrect: data.answeredCorrect,
       score: data.score,
     });
