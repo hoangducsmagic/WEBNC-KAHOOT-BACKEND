@@ -11,7 +11,6 @@ async function validateRefreshToken(userId, refreshToken) {
     _id: userId,
     refreshToken: refreshToken,
   });
-
   if (!user) {
     return false;
   }
@@ -77,7 +76,7 @@ const login = catchAsync(async (req, res, next) => {
   const refreshToken = randomstring.generate(30) + Date.now().toString(16);
 
   await User.updateOne(
-    { _id: user.user_id },
+    { _id: user._id },
     {
       refreshToken: refreshToken,
     }
@@ -101,7 +100,7 @@ const refreshToken = catchAsync(async(req, res, next) => {
       secretKey,
       jwtOptions
     );
-    const isValidRefreshToken = validateRefreshToken(userId, refreshToken);
+    const isValidRefreshToken = await validateRefreshToken(userId, refreshToken);
     if (isValidRefreshToken) {
       const payload = {
         userId,
