@@ -90,7 +90,7 @@ const login = catchAsync(async (req, res, next) => {
   });
 });
 
-const refreshToken = catchAsync((req, res, next) => {
+const refreshToken = catchAsync(async(req, res, next) => {
   const { accessToken, refreshToken } = req.body;
   try {
     const jwtOptions = {
