@@ -6,9 +6,9 @@ const secretKey = process.env.SECRET_KEY;
 const bcrypt=require("bcrypt")
 const randomstring=require("randomstring")
 
-async function validateRefreshToken(username, refreshToken) {
+async function validateRefreshToken(userId, refreshToken) {
   var user = await User.findOne({
-    username: username,
+    _id: userId,
     refreshToken: refreshToken,
   });
 
@@ -96,17 +96,16 @@ const refreshToken = catchAsync((req, res, next) => {
     const jwtOptions = {
       ignoreExpiration: true,
     };
-    const { username, name, email } = jwt.verify(
+    const { userId, username } = jwt.verify(
       accessToken,
       secretKey,
       jwtOptions
     );
-    const isValidRefreshToken = validateRefreshToken(username, refreshToken);
+    const isValidRefreshToken = validateRefreshToken(userId, refreshToken);
     if (isValidRefreshToken) {
       const payload = {
+        userId,
         username,
-        name,
-        email,
       };
       const jwtOptions = {
         expiresIn: process.env.JWT_EXPIRED_TIME,
