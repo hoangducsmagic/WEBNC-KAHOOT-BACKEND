@@ -2,6 +2,8 @@ const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const Quiz = require("../models/quizModel");
 const Question = require("../models/questionModel");
+const cloudinary = require("../config/cloudinary");
+
 
 const getQuizzes = catchAsync(async (req, res, next) => {
   let { userId } = req.user;
@@ -23,6 +25,16 @@ const newQuiz = catchAsync(async (req, res, next) => {
 
 const deleteQuiz = catchAsync(async (req, res, next) => {
   let { id } = req.params;
+  var questions=await Question.find({quizId:id});
+  for(let question of questions){
+    // delete the question
+    if (question._doc.image && Object.keys(question._doc.image).length > 0) {
+      let cloudinaryId = question._doc.image.cloudinaryId;
+      await cloudinary.uploader.destroy(cloudinaryId);
+    }
+    await Question.deleteOne({ _id: question._id })
+  }
+
   Quiz.deleteOne({ _id: id })
 
     .then((result) => res.status(200).send(result))
